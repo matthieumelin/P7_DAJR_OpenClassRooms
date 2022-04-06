@@ -204,7 +204,7 @@ const init = async () => {
 
       /* The above code is creating a list of items. */
       if (value) {
-        functionalSearchRecipe(items, value, list);
+        nativeSearchRecipe(items, value, list);
         
         /* Adding the list to the lists element. */
         lists.appendChild(list);
