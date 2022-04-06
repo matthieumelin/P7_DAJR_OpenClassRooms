@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/normalize.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <title>Les petits plats</title>
+</head>
+
+<body>
+    <header class="header">
+        <img src="./assets/images/banner_logo.png" alt="Logo les petits plats" class="header_logo">
+        <div class="header_search_bar">
+            <input type="text" name="search_recipe" id="search_recipe" class="header_search_bar_input" placeholder="Rechercher une recette">
+            <img src="./assets/icons/search.svg" alt="Rechercher une recette" class="header_search_bar_icon">
+        </div>
+    </header>
+    <main class="main">
+        <section class="filters">
+            <div class="filters_selecteds"></div>
+            <div class="filters_categories">
+                <div class="filters_categories_item" data-active="false">
+                    <input type="text" name="ingredients" id="ingredients" placeholder="Ingrédients" autocomplete="false" class="filters_categories_item_input ingredients">
+                    <img src="./assets/icons/arrow.svg" alt="Flèche du dropdown" class="filters_categories_item_input_arrow">
+                    <div class="filters_categories_item_lists"></div>
+                </div>
+                <div class="filters_categories_item" data-active="false">
+                    <input type="text" name="appliances" id="appliances" placeholder="Appareils" autocomplete="false" class="filters_categories_item_input appliances">
+                    <img src="./assets/icons/arrow.svg" alt="Flèche du dropdown" class="filters_categories_item_input_arrow">
+                    <div class="filters_categories_item_lists"></div>
+                </div>
+                <div class="filters_categories_item" data-active="false">
+                    <input type="text" name="ustensils" id="ustensils" placeholder="Ustensiles" autocomplete="false" class="filters_categories_item_input ustensils">
+                    <img src="./assets/icons/arrow.svg" alt="Flèche du dropdown" class="filters_categories_item_input_arrow">
+                    <div class="filters_categories_item_lists"></div>
+                </div>
+            </div>
+        </section>
+        <section class="recipes"></section>
+    </main>
+
+    <script type="module" src="./assets/js/pages/index.js"></script>
+</body>
+
+</html>
