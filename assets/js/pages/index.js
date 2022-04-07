@@ -1,5 +1,8 @@
 import recipes from "../utils/recipes.js";
-import { functionalSearchRecipe, nativeSearchRecipe } from "../utils/algorithm.js";
+import {
+  functionalSearchRecipe,
+  nativeSearchRecipe,
+} from "../utils/algorithm.js";
 
 const selectedFilters = new Array();
 
@@ -203,9 +206,23 @@ const init = async () => {
       list.innerHTML = "";
 
       /* The above code is creating a list of items. */
-      if (value) {
-        functionalSearchRecipe(items, value, list);
-        
+      const index = items.findIndex((element) => {
+        if (element.includes(value)) {
+          return true;
+        }
+      });
+      if (value && index !== -1) {
+        items
+          .filter((item) =>
+            item.includes(value.charAt(0).toUpperCase() + value.slice(1).trim())
+          )
+          .forEach((item) => {
+            const element = document.createElement("li");
+
+            element.classList.add("filters_categories_item_list_item");
+            element.textContent = item;
+            list.appendChild(element);
+          });
         /* Adding the list to the lists element. */
         lists.appendChild(list);
 

@@ -19,16 +19,6 @@ export const functionalSearchRecipe = async (items, value, list) => {
         element.textContent = item;
         list.appendChild(element);
       });
-  } else {
-    /* It creates a list of items. */
-    items.forEach((item) => {
-      const element = document.createElement("li");
-
-      element.classList.add("filters_categories_item_list_item");
-      element.textContent = item;
-
-      list.appendChild(element);
-    });
   }
 };
 
@@ -47,7 +37,10 @@ export const nativeSearchRecipe = async (items, value, list) => {
   if (index !== -1) {
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      if (items.indexOf(value.charAt(0).toUpperCase() + value.slice(1).trim()) >= 0) {
+      if (
+        items.indexOf(value.charAt(0).toUpperCase() + value.slice(1).trim()) >=
+        0
+      ) {
         const element = document.createElement("li");
         element.classList.add("filters_categories_item_list_item");
         element.textContent = item;
