@@ -61,7 +61,7 @@ const init = async () => {
           section.innerHTML = "";
 
           if (value && value.length >= 3) {
-            const searchedRecipes = await getNativeSearchRecipe(recipes, value);
+            const searchedRecipes = await getFunctionalSearchRecipe(recipes, value);
             if (searchedRecipes.length !== 0) {
               createRecipes(searchedRecipes);
             } else {
