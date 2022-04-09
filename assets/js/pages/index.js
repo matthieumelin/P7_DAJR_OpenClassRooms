@@ -1,7 +1,7 @@
 import recipes from "../utils/recipes.js";
 import {
-  functionalSearchRecipe,
-  nativeSearchRecipe,
+  getFunctionalSearchRecipe,
+  getNativeSearchRecipe,
 } from "../utils/algorithm.js";
 
 const selectedFilters = new Array();
@@ -61,18 +61,7 @@ const init = async () => {
           section.innerHTML = "";
 
           if (value && value.length >= 3) {
-            const searchedRecipes = recipes.filter(
-              (recipe) =>
-                recipe.name.toLowerCase().includes(value.toLowerCase()) ||
-                recipe.description
-                  .toLowerCase()
-                  .includes(value.toLowerCase()) ||
-                recipe.ingredients.some((ingredient) =>
-                  ingredient.ingredient
-                    .toLowerCase()
-                    .includes(value.toLowerCase())
-                )
-            );
+            const searchedRecipes = await getFunctionalSearchRecipe(recipes, value);
             if (searchedRecipes.length !== 0) {
               createRecipes(searchedRecipes);
             } else {
@@ -99,75 +88,77 @@ const init = async () => {
       section.setAttribute("data-active", false);
 
       array.forEach((recipe) => {
-        const ingredients = recipe.ingredients;
+        if (recipe) {
+          const ingredients = recipe.ingredients;
 
-        const card = document.createElement("div");
-        const cardImage = document.createElement("div");
-        const cardBody = document.createElement("div");
-        const cardBodyInline = document.createElement("div");
-        const cardBodyInlineSecond = document.createElement("div");
-        const cardBodyName = document.createElement("h4");
-        const cardBodyTime = document.createElement("div");
-        const cardBodyTimeIcon = document.createElement("img");
-        const cardBodyTimeCount = document.createElement("h4");
-        const cardBodyAbout = document.createElement("ul");
-        const cardBodyAboutDescription = document.createElement("p");
-
-        card.classList.add("recipes_card");
-        cardImage.classList.add("recipes_card_image");
-        cardBody.classList.add("recipes_card_body");
-        cardBodyInline.classList.add("recipes_card_body_inline");
-        cardBodyInlineSecond.classList.add("recipes_card_body_inline");
-        cardBodyName.classList.add("recipes_card_body_name");
-        cardBodyTime.classList.add("recipes_card_body_time");
-        cardBodyTimeIcon.classList.add("recipes_card_body_time_icon");
-        cardBodyTimeCount.classList.add("recipes_card_body_time_count");
-        cardBodyAbout.classList.add(`recipes_card_body_about`);
-        cardBodyAboutDescription.classList.add(
-          `${cardBodyAbout.className}_description`
-        );
-
-        cardBodyName.textContent = recipe.name;
-        cardBodyTimeCount.textContent = `${recipe.time} min`;
-        cardBodyAboutDescription.textContent = recipe.description;
-
-        cardBodyTimeIcon.setAttribute("src", "./assets/icons/clock.svg");
-        cardBodyTimeIcon.setAttribute(
-          "alt",
-          `Temps de recette du ${recipe.name}`
-        );
-
-        cardBodyTime.appendChild(cardBodyTimeCount);
-        cardBodyTime.appendChild(cardBodyTimeIcon);
-        cardBodyTimeCount.before(cardBodyTimeIcon);
-        cardBodyInline.appendChild(cardBodyTime);
-        cardBodyInline.appendChild(cardBodyName);
-        cardBodyName.after(cardBodyTime);
-        cardBody.appendChild(cardBodyInline);
-
-        if (ingredients) {
-          ingredients.forEach((ingredient) => {
-            const cardBodyAboutItem = document.createElement("li");
-
-            cardBodyAboutItem.classList.add(`${cardBodyAbout.className}_item`);
-
-            cardBodyAboutItem.innerHTML = `<strong>${
-              ingredient.ingredient
-            }</strong> ${
-              ingredient.quantity ? `: ${ingredient.quantity}` : ""
-            } ${ingredient.unit ? ingredient.unit : ""}`;
-
-            cardBodyAbout.appendChild(cardBodyAboutItem);
-          });
+          const card = document.createElement("div");
+          const cardImage = document.createElement("div");
+          const cardBody = document.createElement("div");
+          const cardBodyInline = document.createElement("div");
+          const cardBodyInlineSecond = document.createElement("div");
+          const cardBodyName = document.createElement("h4");
+          const cardBodyTime = document.createElement("div");
+          const cardBodyTimeIcon = document.createElement("img");
+          const cardBodyTimeCount = document.createElement("h4");
+          const cardBodyAbout = document.createElement("ul");
+          const cardBodyAboutDescription = document.createElement("p");
+  
+          card.classList.add("recipes_card");
+          cardImage.classList.add("recipes_card_image");
+          cardBody.classList.add("recipes_card_body");
+          cardBodyInline.classList.add("recipes_card_body_inline");
+          cardBodyInlineSecond.classList.add("recipes_card_body_inline");
+          cardBodyName.classList.add("recipes_card_body_name");
+          cardBodyTime.classList.add("recipes_card_body_time");
+          cardBodyTimeIcon.classList.add("recipes_card_body_time_icon");
+          cardBodyTimeCount.classList.add("recipes_card_body_time_count");
+          cardBodyAbout.classList.add(`recipes_card_body_about`);
+          cardBodyAboutDescription.classList.add(
+            `${cardBodyAbout.className}_description`
+          );
+  
+          cardBodyName.textContent = recipe.name;
+          cardBodyTimeCount.textContent = `${recipe.time} min`;
+          cardBodyAboutDescription.textContent = recipe.description;
+  
+          cardBodyTimeIcon.setAttribute("src", "./assets/icons/clock.svg");
+          cardBodyTimeIcon.setAttribute(
+            "alt",
+            `Temps de recette du ${recipe.name}`
+          );
+  
+          cardBodyTime.appendChild(cardBodyTimeCount);
+          cardBodyTime.appendChild(cardBodyTimeIcon);
+          cardBodyTimeCount.before(cardBodyTimeIcon);
+          cardBodyInline.appendChild(cardBodyTime);
+          cardBodyInline.appendChild(cardBodyName);
+          cardBodyName.after(cardBodyTime);
+          cardBody.appendChild(cardBodyInline);
+  
+          if (ingredients) {
+            ingredients.forEach((ingredient) => {
+              const cardBodyAboutItem = document.createElement("li");
+  
+              cardBodyAboutItem.classList.add(`${cardBodyAbout.className}_item`);
+  
+              cardBodyAboutItem.innerHTML = `<strong>${
+                ingredient.ingredient
+              }</strong> ${
+                ingredient.quantity ? `: ${ingredient.quantity}` : ""
+              } ${ingredient.unit ? ingredient.unit : ""}`;
+  
+              cardBodyAbout.appendChild(cardBodyAboutItem);
+            });
+          }
+  
+          cardBodyInlineSecond.appendChild(cardBodyAbout);
+          cardBodyInlineSecond.appendChild(cardBodyAboutDescription);
+          cardBodyInlineSecond.after(cardBody);
+          cardBody.appendChild(cardBodyInlineSecond);
+          card.appendChild(cardBody);
+          cardBody.before(cardImage);
+          section.appendChild(card);
         }
-
-        cardBodyInlineSecond.appendChild(cardBodyAbout);
-        cardBodyInlineSecond.appendChild(cardBodyAboutDescription);
-        cardBodyInlineSecond.after(cardBody);
-        cardBody.appendChild(cardBodyInlineSecond);
-        card.appendChild(cardBody);
-        cardBody.before(cardImage);
-        section.appendChild(card);
       });
     }
   };

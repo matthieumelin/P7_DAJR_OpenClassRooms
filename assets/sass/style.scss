@@ -101,6 +101,7 @@ html {
                 }
                 &[data-active=true] .filters_categories_item_input {
                     border-radius: 5px 5px 0 0;
+                    width: 100%;
                 }
                 .filters_categories_item_input {
                     border-radius: 5px;
@@ -245,8 +246,12 @@ html {
                 gap: 20px;
                 .filters_categories_item {
                     margin: 0;
+                    &[data-active=true] {
+                        .filters_categories_item_lists {
+                            position: absolute;
+                        }
+                    }
                     .filters_categories_item_lists {
-                        position: absolute;
                         .filters_categories_item_list {
                             display: grid;
                             column-gap: 15px;

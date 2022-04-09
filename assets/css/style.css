@@ -96,6 +96,7 @@ html {
 }
 .main .filters .filters_categories .filters_categories_item[data-active=true] .filters_categories_item_input {
   border-radius: 5px 5px 0 0;
+  width: 100%;
 }
 .main .filters .filters_categories .filters_categories_item .filters_categories_item_input {
   border-radius: 5px;
@@ -236,7 +237,7 @@ html {
   .main .filters .filters_categories .filters_categories_item {
     margin: 0;
   }
-  .main .filters .filters_categories .filters_categories_item .filters_categories_item_lists {
+  .main .filters .filters_categories .filters_categories_item[data-active=true] .filters_categories_item_lists {
     position: absolute;
   }
   .main .filters .filters_categories .filters_categories_item .filters_categories_item_lists .filters_categories_item_list {
