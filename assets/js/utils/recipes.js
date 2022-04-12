@@ -694,7 +694,7 @@ const recipes = [
                 "unit":"grammes"
             },
             {
-                "ingredient": "huile d'olive",
+                "ingredient": "Huile d'olive",
                 "quantity": 1,
                 "unit": "cuillères à soupe"
             }
@@ -734,7 +734,7 @@ const recipes = [
                 "unit": "cl"
             },
             {
-                "ingredient": "Crème Fraiche",
+                "ingredient": "Crème fraiche",
                 "quantity" : 1,
                 "unit": "cuillères à soupe"
             }
@@ -804,7 +804,7 @@ const recipes = [
                 "quantity": 3
             },
             {
-                "ingredient": "Crème Fraîche",
+                "ingredient": "Crème fraîche",
                 "quantity": 20,
                 "unit": "cl"
             },
@@ -1609,7 +1609,7 @@ const recipes = [
                 "unit": "grammes"
             },
             {
-                "ingredient": "Crème Fraîche",
+                "ingredient": "Crème fraîche",
                 "quantity": 20,
                 "unit":"cl"
             }

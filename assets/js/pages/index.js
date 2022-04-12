@@ -61,7 +61,7 @@ const init = async () => {
           section.innerHTML = "";
 
           if (value && value.length >= 3) {
-            const searchedRecipes = await getNativeSearchRecipe(recipes, value);
+            const searchedRecipes = await getFunctionalSearchRecipe(recipes, value);
             if (searchedRecipes.length !== 0) {
               createRecipes(searchedRecipes);
             } else {
@@ -102,7 +102,7 @@ const init = async () => {
           const cardBodyTimeCount = document.createElement("h4");
           const cardBodyAbout = document.createElement("ul");
           const cardBodyAboutDescription = document.createElement("p");
-  
+
           card.classList.add("recipes_card");
           cardImage.classList.add("recipes_card_image");
           cardBody.classList.add("recipes_card_body");
@@ -116,17 +116,17 @@ const init = async () => {
           cardBodyAboutDescription.classList.add(
             `${cardBodyAbout.className}_description`
           );
-  
+
           cardBodyName.textContent = recipe.name;
           cardBodyTimeCount.textContent = `${recipe.time} min`;
           cardBodyAboutDescription.textContent = recipe.description;
-  
+
           cardBodyTimeIcon.setAttribute("src", "./assets/icons/clock.svg");
           cardBodyTimeIcon.setAttribute(
             "alt",
             `Temps de recette du ${recipe.name}`
           );
-  
+
           cardBodyTime.appendChild(cardBodyTimeCount);
           cardBodyTime.appendChild(cardBodyTimeIcon);
           cardBodyTimeCount.before(cardBodyTimeIcon);
@@ -134,23 +134,25 @@ const init = async () => {
           cardBodyInline.appendChild(cardBodyName);
           cardBodyName.after(cardBodyTime);
           cardBody.appendChild(cardBodyInline);
-  
+
           if (ingredients) {
             ingredients.forEach((ingredient) => {
               const cardBodyAboutItem = document.createElement("li");
-  
-              cardBodyAboutItem.classList.add(`${cardBodyAbout.className}_item`);
-  
+
+              cardBodyAboutItem.classList.add(
+                `${cardBodyAbout.className}_item`
+              );
+
               cardBodyAboutItem.innerHTML = `<strong>${
                 ingredient.ingredient
               }</strong> ${
                 ingredient.quantity ? `: ${ingredient.quantity}` : ""
               } ${ingredient.unit ? ingredient.unit : ""}`;
-  
+
               cardBodyAbout.appendChild(cardBodyAboutItem);
             });
           }
-  
+
           cardBodyInlineSecond.appendChild(cardBodyAbout);
           cardBodyInlineSecond.appendChild(cardBodyAboutDescription);
           cardBodyInlineSecond.after(cardBody);
@@ -239,37 +241,9 @@ const init = async () => {
       }
     };
     /**
-     * It adds the filter to the selectedFilters array if it is not already in the array.
-     */
-    const selectFilter = (filter) => {
-      const section = document.querySelector(".filters_selecteds");
-      if (section) {
-        if (!selectedFilters.includes(filter)) {
-          const element = document.createElement("span");
-          const deleteButton = document.createElement("img");
-          const elementStyle = {
-            backgroundColor: element.style.background,
-          };
-
-          element.classList.add("filters_selecteds_filter");
-          element.classList.add(input.id);
-          deleteButton.classList.add("filters_selecteds_filter_delete");
-
-          Object.assign(element.style, elementStyle);
-
-          element.textContent = filter;
-
-          section.appendChild(element);
-
-          selectedFilters.push(filter);
-        }
-      }
-    };
-
-    /**
      * It creates a list of items
      */
-    const handleInput = async (event) => {
+    const handleFilters = async (event) => {
       const input = event.target;
       const item = input.parentNode;
       const value = input.value;
@@ -316,12 +290,56 @@ const init = async () => {
 
         if (!value) {
           /* It creates a list of items. */
-          items.forEach((item) => {
-            const element = document.createElement("li");
-            element.classList.add("filters_categories_item_list_item");
-            element.textContent = item;
-            list.appendChild(element);
-          });
+          items
+            .filter((item) => !selectedFilters.includes(item))
+            .forEach((item) => {
+              const element = document.createElement("li");
+              element.classList.add("filters_categories_item_list_item");
+              element.textContent = item;
+              element.addEventListener("click", (event) => {
+                const filter = event.target.textContent;
+
+                if (!selectedFilters.includes(filter)) {
+                  const filters = document.getElementById("filters_selecteds");
+                  const span = document.createElement("span");
+                  const deleteButton = document.createElement("img");
+
+                  if (selectedFilters.length === 0) {
+                    filters.style.display = "flex";
+                  }
+
+                  deleteButton.addEventListener("click", (event) => {
+                    const filter = event.target.textContent;
+                    const newFilters = selectedFilters.findIndex((item) => item.includes(filter));
+
+                    selectedFilters.splice(newFilters, 1);
+
+                    filters.removeChild(span);
+                    list.appendChild(element);
+
+                    if (selectedFilters.length === 0) {
+                      filters.style.display = "none";
+                    }
+                  });
+
+                  deleteButton.setAttribute("src", "../assets/icons/close.svg");
+
+                  deleteButton.classList.add("filters_selecteds_filter_delete");
+                  span.classList.add("filters_selecteds_filter");
+                  span.classList.add(input.id);
+
+                  span.textContent = filter;
+
+                  span.appendChild(deleteButton);
+                  filters.appendChild(span);
+
+                  list.removeChild(element);
+
+                  selectedFilters.push(filter);
+                }
+              });
+              list.appendChild(element);
+            });
         } else {
           const item = document.createElement("li");
           const index = items.findIndex(
@@ -361,10 +379,11 @@ const init = async () => {
         }`;
       }
     };
+
     const inputs = document.querySelectorAll(".filters_categories_item_input");
     inputs.forEach((input) => {
       input.addEventListener("keyup", searchRecipe);
-      input.addEventListener("click", handleInput);
+      input.addEventListener("click", handleFilters);
     });
   };
   createCategories();

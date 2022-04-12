@@ -89,19 +89,24 @@ html {
                     transform: rotate(0deg);
                     transition-duration: 0.2s;
                 }
-                &[data-active=true] .filters_categories_item_input_arrow {
-                    transform: rotate(180deg);
-                    transition-duration: 0.2s;
-                }
-                &[data-active=false] .filters_categories_item_input::placeholder {
-                    color: #fff;
-                }
-                &[data-active=true] .filters_categories_item_input::placeholder {
-                    color: rgba($color: #fff, $alpha: 0.5);
-                }
-                &[data-active=true] .filters_categories_item_input {
-                    border-radius: 5px 5px 0 0;
-                    width: 100%;
+                &[data-active=true] {
+                    max-width: 768px;
+                    width: 768px;
+                    .filters_categories_item_input_arrow {
+                        transform: rotate(180deg);
+                        transition-duration: 0.2s;
+                    }
+                    .filters_categories_item_input {
+                        border-radius: 5px 5px 0 0;
+                        width: 100%;
+                        &::placeholder {
+                            color: rgba($color: #fff, $alpha: 0.5);
+                        }
+                    }
+                    .filters_categories_item_lists {
+                        max-width: 768px;
+                        width: 768px;
+                    }
                 }
                 .filters_categories_item_input {
                     border-radius: 5px;
@@ -112,15 +117,19 @@ html {
                     font-weight: bold;
                     color: #fff;
                     box-sizing: border-box;
+                    &::placeholder {
+                        color: #fff;
+                    }
                 }
                 .filters_categories_item_lists {
                     display: none;
                     .filters_categories_item_list {
-                        border-radius: 0 5px 5px 5px;
+                        border-radius: 0 0 5px 5px;
                         padding: 15px;
                         list-style-type: none;
                         margin: 0;
-                        width: 100%;
+                        max-width: 768px;
+                        width: 768px;
                         .filters_categories_item_list_item {
                             white-space: nowrap;
                             color: #fff;
@@ -141,7 +150,7 @@ html {
         }
         .filters_selecteds {
             width: 90%;
-            display: flex;
+            display: none;
             flex-wrap: wrap;
             gap: 10px;
             margin: 0 0 30px 0;
@@ -154,6 +163,10 @@ html {
                 border-radius: 5px;
                 font-family: "Lato", sans-serif;
                 color: #fff;
+                .filters_selecteds_filter_delete {
+                    margin: 0 0 0 10px;
+                    cursor: pointer;
+                }
             }
         }
         .ingredients {
