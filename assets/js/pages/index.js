@@ -51,38 +51,45 @@ const getUstensils = async () => {
 const init = async () => {
   const input = document.getElementById("search_recipe");
   const section = document.querySelector(".recipes");
+
   if (input) {
     const searchRecipe = async (event) => {
-      if (event.key === "Enter") {
-        const value =
-          event.target.value.charAt(0).toUpperCase() +
-          event.target.value.slice(1).trim();
-        if (section) {
-          section.innerHTML = "";
+      const value =
+        event.target.value.charAt(0).toUpperCase() +
+        event.target.value.slice(1).trim();
 
-          if (value && value.length >= 3) {
-            const searchedRecipes = await getNativeSearchRecipe(recipes, value);
-            if (searchedRecipes.length !== 0) {
-              createRecipes(searchedRecipes);
-            } else {
-              const notFound = document.createElement("p");
+      if (section) {
+        section.innerHTML = "";
 
-              section.setAttribute("data-active", true);
-
-              notFound.classList.add(`${section.className}_not_found`);
-              notFound.textContent =
-                "Aucune recette ne correspond à votre critère... vous pouvez chercher « tarte aux pommes », « poisson », etc.";
-
-              section.appendChild(notFound);
-            }
+        if (value && value.length >= 3) {
+          const searchedRecipes = await getFunctionalSearchRecipe(
+            recipes,
+            value
+          );
+          if (searchedRecipes.length !== 0) {
+            createRecipes(searchedRecipes);
           } else {
-            createRecipes(recipes);
+            const notFound = document.createElement("p");
+
+            section.setAttribute("data-active", true);
+
+            notFound.classList.add(`${section.className}_not_found`);
+            notFound.textContent =
+              "Aucune recette ne correspond à votre critère... vous pouvez chercher « tarte aux pommes », « poisson », etc.";
+
+            section.appendChild(notFound);
           }
+        } else {
+          createRecipes(recipes);
         }
       }
     };
     input.addEventListener("keyup", searchRecipe);
   }
+  /**
+   * It creates a card for each recipe in the array
+   * @param array - an array of objects
+   */
   const createRecipes = async (array) => {
     if (section) {
       section.setAttribute("data-active", false);
@@ -164,10 +171,108 @@ const init = async () => {
       });
     }
   };
+
+  /**
+   * It creates a list of items.
+   */
   const createCategories = async () => {
+    const currentRecipes = recipes;
     /**
-     * It creates a list of items
+     * The above code is adding an event listener to the delete button. When the delete button is clicked,
+     * the code will find the index of the filter that was clicked and remove it from the selectedFilters
+     * array. It will then remove the span element from the filters div and add the element back to the
+     * list. If the selectedFilters array is empty, the filters div will be hidden
+     * @param event - The event that was triggered.
+     * @param element - The element that was clicked.
      */
+    const addFilter = async (event, element, list, input) => {
+      const filter = event.target.textContent;
+
+      if (!selectedFilters.includes(filter)) {
+        const filters = document.getElementById("filters_selecteds");
+        const span = document.createElement("span");
+        const deleteButton = document.createElement("img");
+
+        if (selectedFilters.length === 0) {
+          filters.style.display = "flex";
+        }
+
+        /* The above code is adding an event listener to the delete button. When the delete button is
+               clicked, the code will find the index of the filter that was clicked and remove it from the
+               selectedFilters array. It will then remove the span element from the filters div and add the
+               element back to the list. If the selectedFilters array is empty, the filters div will be
+               hidden. */
+        deleteButton.addEventListener("click", (event) => {
+          const filter = event.target.textContent;
+          const newFilters = selectedFilters.findIndex((item) =>
+            item.includes(filter)
+          );
+
+          selectedFilters.splice(newFilters, 1);
+
+          filters.removeChild(span);
+          list.appendChild(element);
+
+          if (selectedFilters.length === 0) {
+            filters.style.display = "none";
+          }
+
+          if (updatedRecipes.length !== 0) {
+            section.innerHTML = "";
+            createRecipes(recipes);
+          }
+        });
+
+        deleteButton.setAttribute("src", "../assets/icons/close.svg");
+
+        deleteButton.classList.add("filters_selecteds_filter_delete");
+        span.classList.add("filters_selecteds_filter");
+        span.classList.add(input.id);
+
+        span.textContent = filter;
+
+        span.appendChild(deleteButton);
+        filters.appendChild(span);
+
+        list.removeChild(element);
+
+        if (!list.hasChildNodes()) {
+          const item = input.parentNode;
+          const lists = list.parentNode;
+          lists.style.display = "none";
+          lists.innerHTML = "";
+          input.value = "";
+          input.placeholder = `${
+            input.id === "ingredients"
+              ? "Ingrédients"
+              : input.id === "appliances"
+              ? "Appareils"
+              : "Ustensiles"
+          }`;
+          item.setAttribute("data-active", false);
+        }
+
+        selectedFilters.push(filter);
+
+        const updatedRecipes = new Array();
+        currentRecipes.every((currentRecipe) => {
+          currentRecipe.ingredients.every((ingredient) => {
+            if (selectedFilters.includes(ingredient.ingredient)
+            && !updatedRecipes.includes(currentRecipe)) {
+              updatedRecipes.push(currentRecipe);
+            }
+          });
+        });
+
+        console.log(updatedRecipes);
+
+        if (updatedRecipes.length !== 0) {
+          section.innerHTML = "";
+          createRecipes(updatedRecipes);
+        }
+      }
+    };
+
     const searchRecipe = async (event) => {
       const input = event.target;
       const value =
@@ -206,15 +311,23 @@ const init = async () => {
       });
       if (value && index !== -1) {
         items
-          .filter((item) =>
-            item.includes(value.charAt(0).toUpperCase() + value.slice(1).trim())
+          .filter(
+            (item) =>
+              item.includes(
+                value.charAt(0).toUpperCase() + value.slice(1).trim()
+              ) && !selectedFilters.includes(item)
           )
           .forEach((item) => {
             const element = document.createElement("li");
-
             element.classList.add("filters_categories_item_list_item");
             element.textContent = item;
+            element.addEventListener("click", (event) =>
+              addFilter(event, element, list, input)
+            );
+
             list.appendChild(element);
+
+            currentRecipes.push(item);
           });
         /* Adding the list to the lists element. */
         lists.appendChild(list);
@@ -232,12 +345,20 @@ const init = async () => {
         }`;
       } else {
         /* It creates a list of items. */
-        items.forEach((item) => {
-          const element = document.createElement("li");
-          element.classList.add("filters_categories_item_list_item");
-          element.textContent = item;
-          list.appendChild(element);
-        });
+        items
+          .filter((item) => !selectedFilters.includes(item))
+          .forEach((item) => {
+            const element = document.createElement("li");
+            element.classList.add("filters_categories_item_list_item");
+            element.textContent = item;
+            element.addEventListener("click", (event) =>
+              addFilter(event, element, list, input)
+            );
+
+            list.appendChild(element);
+
+            currentRecipes.push(item);
+          });
       }
     };
     /**
@@ -296,58 +417,25 @@ const init = async () => {
               const element = document.createElement("li");
               element.classList.add("filters_categories_item_list_item");
               element.textContent = item;
-              element.addEventListener("click", (event) => {
-                const filter = event.target.textContent;
+              element.addEventListener("click", (event) =>
+                addFilter(event, element, list, input)
+              );
 
-                if (!selectedFilters.includes(filter)) {
-                  const filters = document.getElementById("filters_selecteds");
-                  const span = document.createElement("span");
-                  const deleteButton = document.createElement("img");
-
-                  if (selectedFilters.length === 0) {
-                    filters.style.display = "flex";
-                  }
-
-                  deleteButton.addEventListener("click", (event) => {
-                    const filter = event.target.textContent;
-                    const newFilters = selectedFilters.findIndex((item) => item.includes(filter));
-
-                    selectedFilters.splice(newFilters, 1);
-
-                    filters.removeChild(span);
-                    list.appendChild(element);
-
-                    if (selectedFilters.length === 0) {
-                      filters.style.display = "none";
-                    }
-                  });
-
-                  deleteButton.setAttribute("src", "../assets/icons/close.svg");
-
-                  deleteButton.classList.add("filters_selecteds_filter_delete");
-                  span.classList.add("filters_selecteds_filter");
-                  span.classList.add(input.id);
-
-                  span.textContent = filter;
-
-                  span.appendChild(deleteButton);
-                  filters.appendChild(span);
-
-                  list.removeChild(element);
-
-                  selectedFilters.push(filter);
-                }
-              });
               list.appendChild(element);
             });
         } else {
-          const item = document.createElement("li");
           const index = items.findIndex(
             (item) => item === value.charAt(0).toUpperCase() + value.slice(1)
           );
-          item.classList.add("filters_categories_item_list_item");
-          item.textContent = items[index];
-          list.appendChild(item);
+          if (!selectedFilters.includes(items[index])) {
+            const item = document.createElement("li");
+            item.classList.add("filters_categories_item_list_item");
+            item.textContent = items[index];
+            item.addEventListener("click", (event) =>
+              addFilter(event, item, list, input)
+            );
+            list.appendChild(item);
+          }
         }
 
         /* Adding the list to the lists element. */

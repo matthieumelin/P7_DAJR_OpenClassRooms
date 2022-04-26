@@ -82,6 +82,7 @@ html {
             .filters_categories_item {
                 position: relative;
                 margin: 20px 0;
+                max-width: 320px;
                 .filters_categories_item_input_arrow {
                     position: absolute;
                     top: 25px;
@@ -117,6 +118,7 @@ html {
                     font-weight: bold;
                     color: #fff;
                     box-sizing: border-box;
+                    width: 100%;
                     &::placeholder {
                         color: #fff;
                     }

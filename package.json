@@ -4,6 +4,7 @@
     "description": "P7 OCR",
     "main": "index.js",
     "scripts": {
+        "sass": "npx sass --watch ./assets/sass/style.scss ./assets/css/style.css",
         "start": "concurrently \"live-server\" \"npx sass --watch ./assets/sass/style.scss ./assets/css/style.css\"",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
