@@ -254,11 +254,12 @@ const init = async () => {
 
         selectedFilters.push(filter);
 
+        // TODO: fixer ceci
         const updatedRecipes = new Array();
+        
         currentRecipes.every((currentRecipe) => {
           currentRecipe.ingredients.every((ingredient) => {
-            if (selectedFilters.includes(ingredient.ingredient)
-            && !updatedRecipes.includes(currentRecipe)) {
+            if (selectedFilters.includes(ingredient.ingredient)) {
               updatedRecipes.push(currentRecipe);
             }
           });
@@ -266,9 +267,12 @@ const init = async () => {
 
         console.log(updatedRecipes);
 
+        section.innerHTML = "";
+
         if (updatedRecipes.length !== 0) {
-          section.innerHTML = "";
           createRecipes(updatedRecipes);
+        } else {
+          createRecipes(currentRecipes);
         }
       }
     };
