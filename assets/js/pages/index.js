@@ -62,10 +62,7 @@ const init = async () => {
         section.innerHTML = "";
 
         if (value && value.length >= 3) {
-          const searchedRecipes = await getNativeSearchRecipe(
-            recipes,
-            value
-          );
+          const searchedRecipes = await getNativeSearchRecipe(recipes, value);
           if (searchedRecipes.length !== 0) {
             createRecipes(searchedRecipes);
           } else {
@@ -176,7 +173,6 @@ const init = async () => {
    * It creates a list of items.
    */
   const createCategories = async () => {
-    const currentRecipes = recipes;
     /**
      * The above code is adding an event listener to the delete button. When the delete button is clicked,
      * the code will find the index of the filter that was clicked and remove it from the selectedFilters
@@ -254,25 +250,27 @@ const init = async () => {
 
         selectedFilters.push(filter);
 
-        // TODO: fixer ceci
-        const updatedRecipes = new Array();
-        
-        currentRecipes.every((currentRecipe) => {
-          currentRecipe.ingredients.every((ingredient) => {
-            if (selectedFilters.includes(ingredient.ingredient)) {
-              updatedRecipes.push(currentRecipe);
-            }
+        // meilleur algo
+        const updatedRecipes = recipes.filter((recipe) => {
+          return selectedFilters.every((item) => {
+            return (
+              recipe.ingredients.some((ingredient) => {
+                return ingredient.ingredient.includes(item);
+              }) ||
+              recipe.appliance.includes(item) ||
+              recipe.ustensils.some((ustensil) => {
+                return ustensil.includes(item);
+              })
+            );
           });
         });
-
-        console.log(updatedRecipes);
 
         section.innerHTML = "";
 
         if (updatedRecipes.length !== 0) {
           createRecipes(updatedRecipes);
         } else {
-          createRecipes(currentRecipes);
+          createRecipes(recipes);
         }
       }
     };
@@ -330,8 +328,6 @@ const init = async () => {
             );
 
             list.appendChild(element);
-
-            currentRecipes.push(item);
           });
         /* Adding the list to the lists element. */
         lists.appendChild(list);
@@ -360,8 +356,6 @@ const init = async () => {
             );
 
             list.appendChild(element);
-
-            currentRecipes.push(item);
           });
       }
     };
