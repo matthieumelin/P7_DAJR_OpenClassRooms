@@ -4,6 +4,7 @@ import {
   getNativeSearchRecipe,
 } from "../utils/algorithm.js";
 
+/* Creating an array called selectedFilters. */
 const selectedFilters = new Array();
 
 /**
@@ -12,7 +13,7 @@ const selectedFilters = new Array();
  */
 const getIngredients = async () => {
   const ingredients = new Array();
-  recipes.forEach((recipe) =>
+  await recipes.forEach((recipe) =>
     recipe.ingredients
       .filter((ingredient) => !ingredients.includes(ingredient.ingredient))
       .forEach((ingredient) => ingredients.push(ingredient.ingredient))
@@ -26,7 +27,7 @@ const getIngredients = async () => {
  */
 const getAppliances = async () => {
   const appliances = new Array();
-  recipes.forEach((recipe) => {
+  await recipes.forEach((recipe) => {
     if (!appliances.includes(recipe.appliance)) {
       appliances.push(recipe.appliance);
     }
@@ -40,12 +41,46 @@ const getAppliances = async () => {
  */
 const getUstensils = async () => {
   const ustensils = new Array();
-  recipes.forEach((recipe) =>
+  await recipes.forEach((recipe) =>
     recipe.ustensils
       .filter((ustensil) => !ustensils.includes(ustensil))
       .forEach((ustensil) => ustensils.push(ustensil))
   );
   return ustensils;
+};
+
+/**
+ * It filters the recipes array based on the selectedFilters array.
+ * @param array - an array of objects (recipes)
+ * @returns An array of objects.
+ */
+const getUpdatedRecipes = async (array) => {
+  const updatedRecipes = await array.filter((recipe) => {
+    return selectedFilters.every((item) => {
+      return (
+        recipe.ingredients.some((ingredient) => {
+          return ingredient.ingredient === item;
+        }) ||
+        recipe.appliance === item ||
+        recipe.ustensils.some((ustensil) => {
+          return ustensil === item;
+        })
+      );
+    });
+  });
+  return updatedRecipes;
+};
+
+const setNotFound = (section) => {
+  const notFound = document.createElement("p");
+
+  section.setAttribute("data-active", true);
+
+  notFound.classList.add(`${section.className}_not_found`);
+  notFound.textContent =
+    "Aucune recette ne correspond à votre critère... vous pouvez chercher « tarte aux pommes », « poisson », etc.";
+
+  section.appendChild(notFound);
 };
 
 const init = async () => {
@@ -61,23 +96,18 @@ const init = async () => {
       if (section) {
         section.innerHTML = "";
 
-        if (value && value.length >= 3) {
-          const searchedRecipes = await getNativeSearchRecipe(recipes, value);
-          if (searchedRecipes.length !== 0) {
-            createRecipes(searchedRecipes);
+        const searchedRecipes = await getNativeSearchRecipe(recipes, value);
+        if (searchedRecipes.length !== 0) {
+          if (selectedFilters.length !== 0) {
+            const updatedRecipes = await getUpdatedRecipes(searchedRecipes);
+            if (updatedRecipes.length !== 0) {
+              createRecipes(updatedRecipes);
+            } else {
+              setNotFound(section);
+            }
           } else {
-            const notFound = document.createElement("p");
-
-            section.setAttribute("data-active", true);
-
-            notFound.classList.add(`${section.className}_not_found`);
-            notFound.textContent =
-              "Aucune recette ne correspond à votre critère... vous pouvez chercher « tarte aux pommes », « poisson », etc.";
-
-            section.appendChild(notFound);
+            createRecipes(searchedRecipes);
           }
-        } else {
-          createRecipes(recipes);
         }
       }
     };
@@ -198,7 +228,7 @@ const init = async () => {
                selectedFilters array. It will then remove the span element from the filters div and add the
                element back to the list. If the selectedFilters array is empty, the filters div will be
                hidden. */
-        deleteButton.addEventListener("click", (event) => {
+        deleteButton.addEventListener("click", async (event) => {
           const filter = event.target.textContent;
           const newFilters = selectedFilters.findIndex((item) =>
             item.includes(filter)
@@ -209,13 +239,34 @@ const init = async () => {
           filters.removeChild(span);
           list.appendChild(element);
 
+          section.innerHTML = "";
+          
+          const input = document.getElementById("search_recipe");
+          const value =
+            input.value.charAt(0).toUpperCase() + input.value.slice(1).trim();
+            console.log(value);
+            
           if (selectedFilters.length === 0) {
             filters.style.display = "none";
-          }
-
-          if (updatedRecipes.length !== 0) {
-            section.innerHTML = "";
-            createRecipes(recipes);
+            const searchedRecipes = await getNativeSearchRecipe(recipes, value);
+            if (searchedRecipes.length !== 0) {
+              const updatedRecipes = await getUpdatedRecipes(searchedRecipes);
+              if (updatedRecipes.length !== 0) {
+                await createRecipes(updatedRecipes);
+              } else {
+                createRecipes(recipes);
+              }
+            }
+          } else {
+            const searchedRecipes = await getNativeSearchRecipe(recipes, value);
+            if (searchedRecipes.length !== 0) {
+              const updatedRecipes = await getUpdatedRecipes(searchedRecipes);
+              if (updatedRecipes.length !== 0) {
+                await createRecipes(updatedRecipes);
+              } else {
+                setNotFound(section);
+              }
+            }
           }
         });
 
@@ -250,27 +301,11 @@ const init = async () => {
 
         selectedFilters.push(filter);
 
-        // meilleur algo
-        const updatedRecipes = recipes.filter((recipe) => {
-          return selectedFilters.every((item) => {
-            return (
-              recipe.ingredients.some((ingredient) => {
-                return ingredient.ingredient.includes(item);
-              }) ||
-              recipe.appliance.includes(item) ||
-              recipe.ustensils.some((ustensil) => {
-                return ustensil.includes(item);
-              })
-            );
-          });
-        });
-
         section.innerHTML = "";
 
+        const updatedRecipes = await getUpdatedRecipes(recipes);
         if (updatedRecipes.length !== 0) {
-          createRecipes(updatedRecipes);
-        } else {
-          createRecipes(recipes);
+          await createRecipes(updatedRecipes);
         }
       }
     };
