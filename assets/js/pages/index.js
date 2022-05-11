@@ -240,12 +240,11 @@ const init = async () => {
           list.appendChild(element);
 
           section.innerHTML = "";
-          
+
           const input = document.getElementById("search_recipe");
           const value =
             input.value.charAt(0).toUpperCase() + input.value.slice(1).trim();
-            console.log(value);
-            
+
           if (selectedFilters.length === 0) {
             filters.style.display = "none";
             const searchedRecipes = await getNativeSearchRecipe(recipes, value);
@@ -254,7 +253,7 @@ const init = async () => {
               if (updatedRecipes.length !== 0) {
                 await createRecipes(updatedRecipes);
               } else {
-                createRecipes(recipes);
+                await createRecipes(recipes);
               }
             }
           } else {
