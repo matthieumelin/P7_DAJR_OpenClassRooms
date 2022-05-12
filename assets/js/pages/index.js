@@ -305,6 +305,8 @@ const init = async () => {
         const updatedRecipes = await getUpdatedRecipes(recipes);
         if (updatedRecipes.length !== 0) {
           await createRecipes(updatedRecipes);
+        } else {
+          setNotFound(section);
         }
       }
     };
