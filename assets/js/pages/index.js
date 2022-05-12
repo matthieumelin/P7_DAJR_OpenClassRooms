@@ -308,6 +308,8 @@ const init = async () => {
         } else {
           setNotFound(section);
         }
+
+        console.log(updatedRecipes)
       }
     };
 
