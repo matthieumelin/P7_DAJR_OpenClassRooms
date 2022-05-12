@@ -229,11 +229,9 @@ const init = async () => {
                element back to the list. If the selectedFilters array is empty, the filters div will be
                hidden. */
         deleteButton.addEventListener("click", async (event) => {
-          const filter = event.target.textContent;
-          const newFilters = selectedFilters.findIndex((item) =>
-            item.includes(filter)
-          );
-
+          const filter = event.target.parentNode.textContent;
+          const newFilters = selectedFilters.findIndex((item) => item.includes(filter));
+          
           selectedFilters.splice(newFilters, 1);
 
           filters.removeChild(span);
@@ -308,8 +306,6 @@ const init = async () => {
         } else {
           setNotFound(section);
         }
-
-        console.log(updatedRecipes)
       }
     };
 
