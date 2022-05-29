@@ -102,7 +102,7 @@ const init = async () => {
       if (section) {
         section.innerHTML = "";
 
-        const searchedRecipes = await getNativeSearchRecipe(recipes, value);
+        const searchedRecipes = await getFunctionalSearchRecipe(recipes, value);
         if (searchedRecipes.length !== 0) {
           if (selectedFilters.length !== 0) {
             const updatedRecipes = await getUpdatedRecipes(searchedRecipes);
