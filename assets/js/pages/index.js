@@ -71,6 +71,12 @@ const getUpdatedRecipes = async (array) => {
   return updatedRecipes;
 };
 
+/**
+ * It creates a paragraph element, sets the data-active attribute to true, adds a class to the
+ * paragraph element, sets the text content of the paragraph element, and appends the paragraph element
+ * to the section element
+ * @param section - the section where the results are displayed
+ */
 const setNotFound = (section) => {
   const notFound = document.createElement("p");
 
